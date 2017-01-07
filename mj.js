@@ -1,8 +1,9 @@
 /* mj - a js wrapper to the myjson.com api 4 simple persistent data storage
-only pass plain js objects to mj.create and mj.update..! 
-mj.create, mj.update, and mj.get return promises, use like: 
-  mj.get("np94z").then(data => console.log(data)).catch(() => console.log('error'));
-   */
+only pass plain js objects 2 mj.create n mj.update..! 1st arg of mj.update n mj.get can be entire uri or just id
+mj.create, mj.update, and mj.get return promises, use like:
+  mj.create({tbl1: [[]]}).then(uri => console.log(uri + ' | saved uri in mj.uri'));
+  mj.update(mj.uri, {tbl1: [[]], tbl2: [[]]}).then(data => console.log(data));
+  mj.get('np419y').then(data => console.log(data)); */
 'use strict';
 var mj = {
   downloadR: function(filename, text) {  // helpr that saves users myjson uri locally
@@ -41,17 +42,15 @@ var mj = {
   },
   update: function(id, obj) {  // id can either be the entire uri or just ur id  // obj must b plain js object!
     return new Promise(function(resolve, reject) {
-      var uri, xhr;
-      (id.includes('https:')) ? uri = id : uri = 'https://api.myjson.com/bins/' + id;
-      mj.uri = uri.replace(/^.*bins\//, '');
+      var xhr;
+      (id.includes('http')) ? mj.uri = id : mj.uri = 'https://api.myjson.com/bins/' + id;
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
-      xhr.open('PUT', uri, true);
+      xhr.open('PUT', mj.uri, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.addEventListener('load', function(e) {
         var data = JSON.parse(this.responseText);
-        console.log(data);
         mj.data = data;  // mj.data is local store of ur data during a session
         resolve(data);
       });
@@ -60,11 +59,11 @@ var mj = {
   },
   get: function(id) {  // id can either be the entire uri or just ur id
     return new Promise(function(resolve, reject) {
-      var xhr;
-      (id.includes('bins/')) ? mj.id = id.replace(/^.*bins\//, '') : mj.id = id;
+      var urid, xhr;
+      (id.includes('bins/')) ? urid = id.replace(/^.*bins\//, '') : urid = id;
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
-      xhr.open('GET', 'https://api.myjson.com/bins/' + mj.id, true);
+      xhr.open('GET', 'https://api.myjson.com/bins/' + urid, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.addEventListener('load', function(e) {
