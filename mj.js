@@ -23,7 +23,7 @@ var mj = {
     return new Promise(function(resolve, reject) {
       var xhr;
       if (!window.confirm('aint yet got a store/uri? check mj.uri or in ur download dir "mj_uri.txt" for an existing uri. continue anyways?')) {
-        return Promise.reject(new Error('cancel'));  // exit on cancel
+        return reject();  // exit on cancel
       }
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
