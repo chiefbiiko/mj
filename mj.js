@@ -1,8 +1,11 @@
-/** mj - a js wrapper to the myjson.com API 4 simple persistent data storage
+/**
+ *  mj - a js wrapper 2 the myjson.com API 4 simple persistent data storage
  *  Examples:
+ *  <code>
  *    mj.create({tbl1: [[]]}).then(uri => console.log(`${uri} : saved URI in mj.uri`));
  *    mj.update(mj.uri, {tbl1: [[]], tbl2: [[]]}).then(data => console.log(data));
  *    mj.get('np419y').then(data => console.log(data));
+ *  </code>
 **/
 'use strict';
 var mj = {
@@ -16,7 +19,7 @@ var mj = {
   create(obj) { 
     return new Promise(function(resolve, reject) {
       var xhr;
-      if (!obj || !window.confirm('aint yet got a store/URI? check mj.uri or in ur download dir "mjuri.txt". continue anyways?')) {
+      if (!obj || !window.confirm('aint yet got a store/URI?\ncheck mj.uri or in ur download dir "mjuri.txt".\ncontinue anyways?')) {
         return reject('cancel');  // exit
       }
       xhr = new XMLHttpRequest();
@@ -27,7 +30,7 @@ var mj = {
       xhr.addEventListener('load', function(e) {
         mj.uri = JSON.parse(this.responseText).uri;
         mj._saveUri('mjuri.txt', mj.uri);
-        window.alert(`${mj.uri} : saved this URI. u will need it 2 get and update ur store.`);
+        window.alert(`${mj.uri}\nsaved this URI.\nu will need it 2 get and update ur store.`);
         resolve(mj.uri);
       });
       xhr.send(JSON.stringify(obj));
