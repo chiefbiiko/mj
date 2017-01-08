@@ -21,8 +21,8 @@ var mj = {
   create(obj) {  // obj must be plain js object!
     return new Promise(function(resolve, reject) {
       var xhr;
-      if (!window.confirm('aint yet got a store/uri? check mj.uri or in ur download dir "mj_uri.txt". continue anyways?')) {
-        return reject();  // exit on cancel
+      if (!obj || !window.confirm('aint yet got a store/uri? check mj.uri or in ur download dir "mj_uri.txt". continue anyways?')) {
+        return reject('missing input?');  // exit on cancel
       }
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
@@ -32,7 +32,7 @@ var mj = {
       xhr.addEventListener('load', function(e) {
         mj.uri = JSON.parse(this.responseText).uri;  // mj.uri always holds the last utilized uri during a session
         mj.saveUri('mj_uri.txt', mj.uri);
-        window.alert(mj.uri + ' | saved this uri. u will need it 2 get and update your json.');
+        window.alert(`${mj.uri} : saved this uri. u will need it 2 get and update your json.`);
         resolve(mj.uri);
       });
       xhr.send(JSON.stringify(obj));
@@ -41,7 +41,10 @@ var mj = {
   update(id, obj) {  // id can either be the entire uri or just ur id  // obj must b plain js object!
     return new Promise(function(resolve, reject) {
       var xhr;
-      (/https:\/\/api.myjson.com\/bins\//.test(id)) ? mj.uri = id : mj.uri = 'https://api.myjson.com/bins/' + id;
+      if (!id || !obj) {
+        return reject('missing input!');
+      }
+      (/https:\/\/api.myjson.com\/bins\//.test(id)) ? mj.uri = id : mj.uri = `https://api.myjson.com/bins/${id}`;
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
       xhr.open('PUT', mj.uri, true);
@@ -58,10 +61,13 @@ var mj = {
   get(id) {  // id can either be the entire uri or just ur id
     return new Promise(function(resolve, reject) {
       var urid, xhr;  // urid is used to always extract id, then build full uri, ensuring https
+      if (!id) {
+        return reject('missing input!');
+      }
       (id.includes('bins/')) ? urid = id.replace(/^.*bins\//, '') : urid = id;
       xhr = new XMLHttpRequest();
       xhr.onerror = reject;
-      xhr.open('GET', 'https://api.myjson.com/bins/' + urid, true);
+      xhr.open('GET', mj.uri = `https://api.myjson.com/bins/${urid}`, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.addEventListener('load', function(e) {
