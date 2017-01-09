@@ -34,7 +34,6 @@ var mj = {
       id.includes('bins/') ? urid = id.replace(/^.*bins\//, '') : urid = id;
       xhr = new XMLHttpRequest();
       xhr.open('GET', mj.uri = `https://api.myjson.com/bins/${urid}`, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.addEventListener('load', e => {
         xhr.status === 200 ? resolve(mj.data = JSON.parse(xhr.responseText)) : reject(`xhr error ${xhr.status}`);
